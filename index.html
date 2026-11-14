@@ -3,49 +3,154 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#08090b">
-  <meta name="description" content="時刻だけを、美しく。シンプルなフルスクリーン時計。">
+  <meta name="theme-color" content="#080d19">
+  <meta name="description" content="Liquid-inspired glass clock. 時刻だけを美しく表示する時計。">
   <title>12 CLOCK</title>
   <style>
-    :root { color-scheme: dark; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: #08090b; color: #f7f8fa; }
-    * { box-sizing: border-box; }
-    html, body { margin: 0; width: 100%; min-height: 100%; }
-    body { min-height: 100svh; min-height: 100dvh; overflow: hidden; }
-    main { width: 100%; min-height: 100svh; min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: max(24px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); }
-    .clock { display: flex; align-items: baseline; justify-content: center; gap: clamp(8px, 1.8vw, 26px); width: 100%; white-space: nowrap; font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
-    .time { font-size: clamp(2.6rem, 13.4vw, 13rem); font-weight: 550; letter-spacing: -0.075em; line-height: 1; }
-    .period { color: #81858e; font-size: clamp(.85rem, 2.1vw, 2rem); font-weight: 500; letter-spacing: .09em; }
-    @media (max-width: 560px) { .clock { gap: 10px; } .time { font-size: 15vw; } .period { font-size: 2.8vw; letter-spacing: .02em; } }
-    @media (prefers-reduced-motion: no-preference) { .clock { animation: appear .65s ease-out both; } @keyframes appear { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } } }
+    :root {
+      color-scheme: dark;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+      color: #f8fbff;
+      background: #080d19;
+      font-synthesis: none;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; width: 100%; }
+    body { min-height: 100vh; min-height: 100dvh; overflow: hidden; }
+    .scene {
+      position: relative; isolation: isolate; display: grid; place-items: center;
+      min-height: 100vh; min-height: 100dvh; padding: 24px;
+      overflow: hidden;
+      background: radial-gradient(ellipse at 50% 95%, #15243c 0%, #080d19 59%, #060a13 100%);
+    }
+    .scene::before {
+      content: ""; position: absolute; inset: -15%; z-index: -3;
+      background: radial-gradient(ellipse 45% 40% at 24% 35%, rgba(59,130,246,.25), transparent 78%),
+        radial-gradient(ellipse 40% 50% at 80% 65%, rgba(152,103,255,.22), transparent 78%);
+      filter: blur(36px); animation: ambience 22s ease-in-out infinite alternate;
+    }
+    .orb { position: absolute; z-index: -2; pointer-events: none; border-radius: 50%;
+      filter: blur(clamp(28px, 7vw, 100px)); opacity: .64; transform: translate3d(0,0,0);
+    }
+    .orb--blue { width: min(57vw, 690px); aspect-ratio: 1; left: -16%; top: -32%;
+      background: radial-gradient(circle, #3576e8 0%, #1c487d 44%, transparent 72%);
+      animation: float-blue 23s ease-in-out infinite alternate;
+    }
+    .orb--purple { width: min(54vw, 680px); aspect-ratio: 1; right: -16%; bottom: -38%;
+      background: radial-gradient(circle, #795bde 0%, #343679 47%, transparent 73%);
+      animation: float-purple 27s ease-in-out infinite alternate;
+    }
+    .orb--cyan { width: min(26vw, 340px); aspect-ratio: 1; left: 42%; bottom: -24%;
+      background: radial-gradient(circle, #3fa9cf, transparent 68%); opacity: .25;
+      animation: float-blue 30s ease-in-out infinite alternate-reverse;
+    }
+    .glass {
+      --pointer-x: 50%; --pointer-y: 15%;
+      position: relative; isolation: isolate; display: grid; place-items: center;
+      width: min(92vw, 1110px); min-height: clamp(230px, 36vw, 370px);
+      padding: clamp(32px, 5vw, 64px) clamp(20px, 5vw, 70px);
+      border: 1px solid rgba(255,255,255,.20); border-radius: clamp(28px, 5vw, 54px);
+      background: linear-gradient(145deg, rgba(255,255,255,.16), rgba(255,255,255,.055) 41%, rgba(255,255,255,.075) 76%, rgba(255,255,255,.11));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.3), inset 0 -1px 0 rgba(255,255,255,.07),
+        0 24px 90px rgba(0,0,0,.28), 0 4px 22px rgba(0,0,0,.16);
+      -webkit-backdrop-filter: blur(34px) saturate(160%); backdrop-filter: blur(34px) saturate(160%);
+      animation: arrive 1.1s cubic-bezier(.18,.75,.2,1) both;
+    }
+    .glass::before {
+      content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none;
+      background: radial-gradient(ellipse 65% 80% at var(--pointer-x) var(--pointer-y),
+        rgba(255,255,255,.18) 0%, rgba(255,255,255,.045) 47%, transparent 80%);
+      opacity: .8; transition: opacity .35s;
+    }
+    .glass::after {
+      content: ""; position: absolute; inset: 1px; z-index: -1; pointer-events: none;
+      border-radius: inherit; background: linear-gradient(165deg, rgba(255,255,255,.13), transparent 30%, transparent 72%, rgba(255,255,255,.03));
+      -webkit-mask: linear-gradient(#000, #000); mask: linear-gradient(#000, #000);
+    }
+    .clock {
+      width: 100%; display: flex; justify-content: center; align-items: baseline;
+      gap: clamp(7px, 1.8vw, 25px); white-space: nowrap;
+      font-variant-numeric: tabular-nums; font-feature-settings: "tnum";
+      text-shadow: 0 2px 24px rgba(210,230,255,.18);
+    }
+    .time {
+      font-size: clamp(2.65rem, 10vw, 9.3rem); font-weight: 500; line-height: 1;
+      letter-spacing: -.067em; font-variant-numeric: tabular-nums;
+    }
+    .period {
+      font-size: clamp(.86rem, 1.7vw, 1.55rem); font-weight: 500;
+      letter-spacing: .025em; color: rgba(242,247,255,.72);
+    }
+    @keyframes arrive { from { opacity: 0; transform: translateY(18px) scale(.975); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes ambience { from { transform: translate(-2%,-2%) rotate(-5deg); } to { transform: translate(3%,3%) rotate(7deg); } }
+    @keyframes float-blue { from { transform: translate(-4%, -3%); } to { transform: translate(21%, 13%); } }
+    @keyframes float-purple { from { transform: translate(5%,5%); } to { transform: translate(-19%, -14%); } }
+    @media (max-width: 650px) {
+      .scene { padding: 15px; }
+      .glass { width: 100%; min-height: 200px; padding: 30px 12px; border-radius: 30px; }
+      .time { font-size: clamp(2.1rem, 10.8vw, 4.6rem); letter-spacing: -.075em; }
+      .period { font-size: clamp(.65rem, 2.5vw, .95rem); }
+      .orb--blue, .orb--purple { width: 95vw; }
+    }
+    @media (max-width: 360px) {
+      .time { font-size: 10.2vw; }
+      .clock { gap: 6px; }
+    }
+    @media (prefers-reduced-transparency: reduce) {
+      .glass { background: #1c273a; -webkit-backdrop-filter: none; backdrop-filter: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
   </style>
 </head>
 <body>
-  <main aria-label="現在の時刻">
-    <div class="clock" role="timer" aria-live="off" aria-label="現在時刻">
-      <span class="time" id="time">12:00:00</span>
-      <span class="period" id="period">AM</span>
-    </div>
+  <main class="scene" aria-label="時計">
+    <div class="orb orb--blue" aria-hidden="true"></div>
+    <div class="orb orb--purple" aria-hidden="true"></div>
+    <div class="orb orb--cyan" aria-hidden="true"></div>
+    <section class="glass" aria-label="現在時刻">
+      <div class="clock" role="timer" aria-live="off" aria-label="現在時刻">
+        <time class="time" id="time">12:00:00</time>
+        <span class="period" id="period">AM</span>
+      </div>
+    </section>
   </main>
   <script>
     (() => {
-      const timeElement = document.getElementById('time');
-      const periodElement = document.getElementById('period');
+      const time = document.getElementById('time');
+      const period = document.getElementById('period');
+      const clock = document.querySelector('.clock');
+      const glass = document.querySelector('.glass');
       const pad = value => String(value).padStart(2, '0');
       let previousSecond = '';
       function render() {
         const now = new Date();
-        const secondKey = [now.getHours(), now.getMinutes(), now.getSeconds()].join(':');
-        if (secondKey === previousSecond) return;
-        previousSecond = secondKey;
+        const key = [now.getHours(), now.getMinutes(), now.getSeconds()].join(':');
+        if (key === previousSecond) return;
+        previousSecond = key;
         const hour = now.getHours() % 12 || 12;
-        timeElement.textContent = pad(hour) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
-        periodElement.textContent = now.getHours() < 12 ? 'AM' : 'PM';
-        document.querySelector('.clock').setAttribute('aria-label', now.toLocaleTimeString('ja-JP'));
+        time.textContent = pad(hour) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+        time.dateTime = now.toISOString();
+        period.textContent = now.getHours() < 12 ? 'AM' : 'PM';
+        clock.setAttribute('aria-label', now.toLocaleTimeString('ja-JP'));
       }
       render();
       setInterval(render, 200);
       document.addEventListener('visibilitychange', render);
       window.addEventListener('focus', render);
+      if (window.matchMedia('(pointer: fine)').matches &&
+          !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        glass.addEventListener('pointermove', event => {
+          const rect = glass.getBoundingClientRect();
+          glass.style.setProperty('--pointer-x', ((event.clientX - rect.left) / rect.width * 100).toFixed(1) + '%');
+          glass.style.setProperty('--pointer-y', ((event.clientY - rect.top) / rect.height * 100).toFixed(1) + '%');
+        }, { passive: true });
+        glass.addEventListener('pointerleave', () => {
+          glass.style.setProperty('--pointer-x', '50%');
+          glass.style.setProperty('--pointer-y', '15%');
+        });
+      }
     })();
   </script>
 </body>
